@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import urllib as url
 from usno import usno 
+from cmath import cos, sin
+from math import radians, degrees
 
 fits1 = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
 s1 = pf.open(fits1)
@@ -17,7 +19,10 @@ dedeg = float(des[0:2]) + dsgn*float(des[4:5])/60. + dsgn*float(des[7:])/3600.
 fovam = 3.0 # size of square search field in arc min
 epoch = s1[0].header['equinoxu']
 name,rad,ded,rmag = usno(radeg,dedeg,fovam,epoch)
+print(rad)
+
 w = np.where(rmag < 17)[0]
+print(w)
 plt.plot(rad[w],ded[w],'g.')
 plt.locator_params(axis='x',nbins=4)
 plt.locator_params(axis='y',nbins=4)
@@ -27,3 +32,9 @@ plt.ticklabel_format(useOffset=False)
 plt.axis('scaled')
 'plt.xlim([266.11,266.03]) # reverse the x-axis direction'
 plt.show()
+
+der = radians(ded[1])
+rar = radians(rad[1])
+
+X = -((cos(der)*sin(rar))/(cos(der)*cos(rar)+sin(der)))
+print(X)

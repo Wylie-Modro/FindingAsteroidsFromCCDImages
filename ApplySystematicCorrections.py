@@ -14,12 +14,13 @@ xb = bsub(x,hdr.get('cover'))
 
 flat = pf.getdata(filename)
 fhdr = pf.getheader(filename)
+print(fhdr)
 flatb = bsub(flat,hdr.get('cover')) # Bias subtract
 flatb = flatb/np.median(flatb) # normalize
 plt.figure()
 plt.subplot(121)
 imp = plt.imshow(flatb,cmap='gray_r',vmin=0.8,vmax=1.2)
-print(flatb)
+#print(flatb)
 plt.colorbar()
 plt.subplot(122)
 imp = plt.imshow(xb/(flatb),cmap='gray_r',vmin=50,vmax=500)
