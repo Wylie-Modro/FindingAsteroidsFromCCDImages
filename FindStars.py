@@ -3,37 +3,83 @@ import astropy.io.fits as pf
 import matplotlib.pyplot as plt
 from bsub import bsub
 
-def LocatePeakRanges(flatb, gap, threashhold):
-        peakRanges=[]
+
+def LocateMainPeakRanges(flatb, gap, threshhold):
         intensitiesDict = {}
         rowNum = 0
+        num = 0
         for entry in flatb:
             colNum = 0
             rowNum +=1
             for subEntry in entry:
-                colNum +=1
+                colNum += 1
+                num += 1
                 #print("rowNum: " + str(rowNum), " colNum: " + str(colNum))
                 colRowHack = int(str(rowNum)+str(colNum))
-                print("colRowHack : " + str(colRowHack))
+                #print("colRowHack : " + str(colRowHack))
                 #subEntryNpArray = np.ndarray(subEntry)
                 #print(subEntry)
-                intensitiesDict[colRowHack] = subEntry
+                intensitiesDict[num] = [rowNum, colNum, subEntry]
+                #print(intensitiesDict[num])
         #print(intensitiesDict)  
-        for key in intensitiesDict.keys():
-            print("key: " + str(key))
-            if key+gap >= 10241024:
+        
+        draftLocationOfPeakRanges = LocateRowPeakRanges(intensitiesDict, gap, threshhold)
+        print("draftLocationOfPeakRanges: " + str(draftLocationOfPeakRanges))
+        confirmedLocationOfPeakRanges = LocateColPeakRanges(draftLocationOfPeakRanges, intensitiesDict, 5, 5)
+        print("confirmedLocationOfPeakRanges: " + str(confirmedLocationOfPeakRanges))
+
+     
+def LocateRowPeakRanges(intensitiesDict, gap, threshhold):
+    locationRowOfPeakRanges = []
+    for key, value in intensitiesDict.iteritems():
+            #print("key: " + str(key))
+            
+            row = value[0]
+            col = value[1]
+            intensity = value[2]
+            
+            if row+gap >= 1024:
                 gap = float(int(gap/2))
-            startValue = intensitiesDict[key]
-            midValue = intensitiesDict[key+int(gap/2)]
-            endValue = intensitiesDict[key+gap]
-            if midValue - startValue > threashhold and midValue - endValue > threashhold :
+            startValue = (intensitiesDict[key])[2]
+            midValue = (intensitiesDict[key+int(gap/2)])[2]
+            endValue = (intensitiesDict[key+gap])[2]
+            if midValue - startValue > threshhold and midValue - endValue > threshhold :
                 #print('Peak at:' + str(key + gap/2) +'!!!')
-                peakRanges.extend([key, key + gap/2, key + gap])
+                locationRowOfPeakRanges.extend([key, key + gap/2, key + gap])
             else:
                 #print('No peak at:' + str(key + gap/2)+' intensitiesDict[key+gap]: ' + str(intensitiesDict[key+gap]))
                 pass
-        return peakRanges
+    return locationRowOfPeakRanges
         
+        
+def LocateColPeakRanges(locationRowOfPeakRanges, intensitiesDict, colThreshold, rowThreshold):
+    # get col and row of each
+    #for keyOuterLoop, valueOuterLoop in intensitiesDict.iteritems():
+    potentialStars = []
+    for peakNumOuterLoop in locationRowOfPeakRanges: 
+        
+        rowOuterLoop = (intensitiesDict[peakNumOuterLoop])[0]
+        print("rowOuterLoop: " +str(rowOuterLoop))
+        colOuterLoop = (intensitiesDict[peakNumOuterLoop])[1]
+        intensityOuterLoop = (intensitiesDict[peakNumOuterLoop])[2]  
+          
+        #for keyInnerLoop, valueInnerLoop in intensitiesDict.iteritems():
+        for peakNumInnerLoop in locationRowOfPeakRanges:
+            
+            rowInnerLoop = (intensitiesDict[peakNumInnerLoop])[0]
+            print("rowInnerLoop: " +str(rowInnerLoop))
+            colInnerLoop = (intensitiesDict[peakNumInnerLoop])[1]
+            intensityInnerLoop = (intensitiesDict[peakNumInnerLoop])[2]
+            
+            if (rowOuterLoop != rowInnerLoop and abs(rowOuterLoop - rowInnerLoop) < rowThreshold):
+                if abs(colOuterLoop - colInnerLoop) < colThreshold:
+                    potentialStars.append([peakNumOuterLoop, peakNumInnerLoop]) 
+    
+    return potentialStars
+    
+    # compare col with another, if close and if row is close and add range to another list  
+    
+    
 
 def IsolatePeaks(peakRanges):
         peakSet = set()
@@ -85,8 +131,8 @@ for entry in flatb:
 print(i)
 print(i**2)
 
-peakRanges = LocatePeakRanges(flatb, 10., 0.2)
-print(peakRanges)
+peakRanges = LocateMainPeakRanges(flatb, 10., 0.5)
+print("peakRanges: " + str(peakRanges))
 #print(IsolatePeaks(peakRanges))
 
 
