@@ -22,7 +22,6 @@ name,rad,ded,rmag = usno(radeg,dedeg,fovam,epoch)
 print(rad)
 
 w = np.where(rmag < 17)[0]
-print(w)
 plt.plot(rad[w],ded[w],'g.')
 plt.locator_params(axis='x',nbins=4)
 plt.locator_params(axis='y',nbins=4)
@@ -33,8 +32,31 @@ plt.axis('scaled')
 'plt.xlim([266.11,266.03]) # reverse the x-axis direction'
 plt.show()
 
-der = radians(ded[1])
-rar = radians(rad[1])
+rar0 = radians((np.amax(rad[w])+np.amin(rad[w]))/2) #RA0 in radian
+der0 = radians((np.amax(ded[w])+np.amin(ded[w]))/2) #Declination0 in radian
 
-X = -((cos(der)*sin(rar))/(cos(der)*cos(rar)+sin(der)))
-print(X)
+rar = []
+der = []
+X = []
+Y = []
+x=[]
+y=[]
+for i in w:
+    rar.append(radians(rad[i])) #RA in radian
+    der.append(radians(ded[i])) #Declination in radian
+
+j = 0
+while (j < len(rar)):
+    X.append(-((cos(der[j])*sin(rar[j]-rar0))/(cos(der0)*cos(der[j])*cos(rar[j]-rar0)+sin(der[j])*sin(der0))))
+    Y.append(-((sin(der0)*cos(der[j])*cos(rar[j]-rar0)-cos(der0)*sin(der[j]))/(cos(der0)*cos(der[j])*cos(rar[j]-rar0)+sin(der[j])*sin(der0))))
+    j+=1
+
+
+k = 0
+while (k < len(X)):
+    x.append(3.454*(X[k]/0.000009))
+    y.append(3.454*(Y[k]/0.000009))        
+    k+=1
+    
+print(x)
+print(y)
