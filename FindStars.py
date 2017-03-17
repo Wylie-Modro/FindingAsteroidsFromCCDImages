@@ -12,16 +12,17 @@ def LocatePeakRanges(flatb, gap, threashhold):
             rowNum +=1
             for subEntry in entry:
                 colNum +=1
-                print("rowNum: " + str(rowNum), " colNum: " + str(colNum))
+                #print("rowNum: " + str(rowNum), " colNum: " + str(colNum))
                 colRowHack = int(str(rowNum)+str(colNum))
                 print("colRowHack : " + str(colRowHack))
                 #subEntryNpArray = np.ndarray(subEntry)
-                print(subEntry)
+                #print(subEntry)
                 intensitiesDict[colRowHack] = subEntry
-            
+        #print(intensitiesDict)  
         for key in intensitiesDict.keys():
-            #if key+gap >= 1024:
-            #    gap = float(int(gap/2))
+            print("key: " + str(key))
+            if key+gap >= 10241024:
+                gap = float(int(gap/2))
             startValue = intensitiesDict[key]
             midValue = intensitiesDict[key+int(gap/2)]
             endValue = intensitiesDict[key+gap]
@@ -86,6 +87,6 @@ print(i**2)
 
 peakRanges = LocatePeakRanges(flatb, 10., 0.2)
 print(peakRanges)
-print(IsolatePeaks(peakRanges))
+#print(IsolatePeaks(peakRanges))
 
 
