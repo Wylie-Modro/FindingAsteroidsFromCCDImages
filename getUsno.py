@@ -2,8 +2,9 @@ import astropy.io.fits as pf
 import matplotlib.pyplot as plt
 import numpy as np
 import urllib as url
+import math as math
 from usno import usno 
-from cmath import cos, sin
+from cmath import cos, sin, phase
 from math import radians, degrees
 
 fits1 = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
@@ -21,16 +22,19 @@ epoch = s1[0].header['equinoxu']
 name,rad,ded,rmag = usno(radeg,dedeg,fovam,epoch)
 print(rad)
 
+plt.figure(1)
 w = np.where(rmag < 17)[0]
+plt.subplot(211)
 plt.plot(rad[w],ded[w],'g.')
 plt.locator_params(axis='x',nbins=4)
 plt.locator_params(axis='y',nbins=4)
 plt.tick_params('x',pad=10)
+plt.xlabel('RA [Deg]')
 plt.ylabel('Dec [Deg]')
 plt.ticklabel_format(useOffset=False)
 plt.axis('scaled')
-'plt.xlim([266.11,266.03]) # reverse the x-axis direction'
-plt.show()
+#plt.xlim([106.0,105.0]) # reverse the x-axis direction
+
 
 rar0 = radians((np.amax(rad[w])+np.amin(rad[w]))/2) #RA0 in radian
 der0 = radians((np.amax(ded[w])+np.amin(ded[w]))/2) #Declination0 in radian
@@ -40,7 +44,9 @@ der = []
 X = []
 Y = []
 x=[]
+x1=[]
 y=[]
+y1=[]
 for i in w:
     rar.append(radians(rad[i])) #RA in radian
     der.append(radians(ded[i])) #Declination in radian
@@ -57,6 +63,18 @@ while (k < len(X)):
     x.append(3.454*(X[k]/0.000009))
     y.append(3.454*(Y[k]/0.000009))        
     k+=1
+  
+l=0
+while (l < len(x)):
+    x1.append(x[l].real)
+    y1.append(y[l].real)
+    l+=1
     
-print(x)
-print(y)
+print(x1)
+print(y1)
+
+plt.subplot(212)
+plt.plot(x1, y1, 'r.')
+plt.xlabel('x [Deg]')
+plt.ylabel('y [Deg]')
+plt.show()
