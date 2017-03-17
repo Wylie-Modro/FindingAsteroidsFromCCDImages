@@ -5,12 +5,12 @@ from bsub import bsub
 
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
-filename = 'data-2017-03-02-nickel-Shelley.Wright/d1002.fits'
+filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
 
 x = pf.getdata(filename)
 hdr = pf.getheader(filename)
 xb = bsub(x,hdr.get('cover'))
-print(xb)
+#print(xb)
 
 flat = pf.getdata(filename)
 fhdr = pf.getheader(filename)
@@ -19,6 +19,7 @@ flatb = flatb/np.median(flatb) # normalize
 plt.figure()
 plt.subplot(121)
 imp = plt.imshow(flatb,cmap='gray_r',vmin=0.8,vmax=1.2)
+print(flatb)
 plt.colorbar()
 plt.subplot(122)
 imp = plt.imshow(xb/(flatb),cmap='gray_r',vmin=50,vmax=500)
