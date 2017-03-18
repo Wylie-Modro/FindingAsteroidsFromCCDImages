@@ -75,7 +75,7 @@ def LocateRowPeakRanges(intensitiesDict, gap, threshhold):
                 pass
     return locationRowOfPeakRanges
         
-        
+'''        
 def LocateColPeakRanges(locationRowOfPeakRanges, intensitiesDict, colThreshold, rowThreshold):
     # get col and row of each
     #for keyOuterLoop, valueOuterLoop in intensitiesDict.iteritems():
@@ -86,8 +86,8 @@ def LocateColPeakRanges(locationRowOfPeakRanges, intensitiesDict, colThreshold, 
         rowOuterLoop = (intensitiesDict[peakNumOuterLoop])[0]
         #print("rowOuterLoop: " +str(rowOuterLoop))
         colOuterLoop = (intensitiesDict[peakNumOuterLoop])[1]
-        intensityOuterLoop = (intensitiesDict[peakNumOuterLoop])[2]  
-          
+        intensityOuterLoop = (intensitiesDict[peakNumOuterLoop])[2]
+        
         #for keyInnerLoop, valueInnerLoop in intensitiesDict.iteritems():
         for peakNumInnerLoop in locationRowOfPeakRanges:
             
@@ -113,50 +113,65 @@ def LocateColPeakRanges(locationRowOfPeakRanges, intensitiesDict, colThreshold, 
     
     # compare col with another, if close and if row is close and add range to another list  
     
-    
+''' 
 
 def IsolateStars(locationRowOfPeakRanges, intensitiesDict, colThreshold, rowThreshold):
         peakSet = set()
         masterList = []
         tempList = []
         
-        rows = []
-        cols=[]
-        #print("locationRowOfPeakRanges before: " + str(locationRowOfPeakRanges))
-        locationRowOfPeakRanges = sorted(locationRowOfPeakRanges)
-        #print("locationRowOfPeakRanges after: " + str(locationRowOfPeakRanges))
-        
-        
         for peakNumOuterLoop in locationRowOfPeakRanges:
             rowO = (intensitiesDict[peakNumOuterLoop])[0]
             colO = (intensitiesDict[peakNumOuterLoop])[1]
-            #print("----------------------------------")
-            for peakNumInnerLoop in locationRowOfPeakRanges:
-           
-           
             print("peakNumOuterLoop: " + str(peakNumOuterLoop))
-            #nextRow = (intensitiesDict[locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]])[0]
-            print("row: " + str(row))
-            #print("nextRow: " + str(nextRow))
             
-            #nextCol = (intensitiesDict[locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]])[1]
+            if (colO <= 275 and colO >= 245):
+                locationRowOfPeakRanges.remove(peakNumOuterLoop)
+                print("Deleted peakNumOuterLoop as was in line")
+            else:  
             
-            print("col: " + str(col))
-            #print("nextCol: " + str(nextCol))
-            
-            if np.abs(row - nextRow) <= rowThreshold and np.abs(col - nextCol) <= colThreshold:
-                if (col <= 275 and col >= 245): #Remove Line
-                    pass
-                else:
-                    peakSet.add(peakNumOuterLoop)
-                    #print("Added peakNumOuterLoop: " + str(peakNumOuterLoop))
-                    peakSet.add(locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1])
-                    #print("Added locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]: " + str(locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]))
-                    #print("peakSet after add: " + str(peakSet))
-            else: 
+                #print("----------------------------------")
+                for peakNumInnerLoop in locationRowOfPeakRanges:
+                    rowI = (intensitiesDict[peakNumInnerLoop])[0]
+                    colI = (intensitiesDict[peakNumInnerLoop])[1]
+                    print("peakNumInnerLoop: " + str(peakNumInnerLoop))
+                    
+                    #nextRow = (intensitiesDict[locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]])[0]
+                    print("rowO: " + str(rowO))
+                    print("rowI: " + str(rowI))
+                    print("colO: " + str(colO))
+                    print("colI: " + str(colI))
+                    #print("nextRow: " + str(nextRow))
+                    
+                    #nextCol = (intensitiesDict[locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]])[1]
+    
+                    #print("nextCol: " + str(nextCol))
+                    if (colI <= 275 and colI >= 245):
+                            locationRowOfPeakRanges.remove(peakNumInnerLoop)
+                            print("Deleted peakNumInnerLoop as was in line")
+                    elif np.abs(rowO - rowI) <= rowThreshold and np.abs(colO - colI) <= colThreshold:
+                        print("Through Threshhold")
+                        if (rowO == rowI and colO == colI):
+                            pass
+                        else:
+                            #print("Added peakNumOuterLoop: " + str(peakNumOuterLoop))
+                            peakSet.add(peakNumInnerLoop)
+                            
+                            locationRowOfPeakRanges.remove(peakNumInnerLoop)
+                            print("add: len(locationRowOfPeakRanges):" + str(len(locationRowOfPeakRanges)))
+                            
+                            #print("Added locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]: " + str(locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]))
+                            #print("peakSet after add: " + str(peakSet))
+                    else: 
+                        print("Rejected")
+                        pass
+                    
+                    # when itterated peakNumOuterLoop for all values of peakNumInnerLoop
+                peakSet.add(peakNumOuterLoop)
+                locationRowOfPeakRanges.remove(peakNumOuterLoop)
+                print("end loop: len(locationRowOfPeakRanges):" + str(len(locationRowOfPeakRanges)))
+                
                 if len(peakSet) > 0:
-                    # check if something close is in masterList
-
                     for peak in peakSet:
                         #print("peakSet: " + str(peakSet))
                         tempList.append(peak)
@@ -166,20 +181,22 @@ def IsolateStars(locationRowOfPeakRanges, intensitiesDict, colThreshold, rowThre
                     #print("masterList: " + str(masterList))
                     del tempList[:]
                     peakSet.clear()
-            
-            lastRow = (intensitiesDict[locationRowOfPeakRanges[-1]])[0]
-            lastCol = (intensitiesDict[locationRowOfPeakRanges[-1]])[1]
-            #print("lastRow: " + str(lastRow))
-            #print("lastCol: " + str(lastCol))
-            if nextRow == lastRow and nextCol == lastCol:
-                for peak in peakSet:
-                    tempList.append(peak)
-                masterList.append(tempList)
                 
-                print("About to exit")
-                return masterList    
-           # print("----------------------------------")
-        
+                #lastRow = (intensitiesDict[locationRowOfPeakRanges[-1]])[0]
+                #lastCol = (intensitiesDict[locationRowOfPeakRanges[-1]])[1]
+                #print("lastRow: " + str(lastRow))
+                #print("lastCol: " + str(lastCol))
+                '''
+                if nextRow == lastRow and nextCol == lastCol:
+                    for peak in peakSet:
+                        tempList.append(peak)
+                    masterList.append(tempList)
+                '''
+                
+        print("About to exit")
+        return masterList    
+               # print("----------------------------------")
+            
 
 def MergeGroupsThatAreClose(intensitiesDict, masterList, colThreshold, rowThreshold):
     finalGroups = []
@@ -232,7 +249,7 @@ flatb = bsub(flat,hdr.get('cover')) # Bias subtract
 flatb = flatb/np.median(flatb) # normalize
 
 
-peakRanges = LocateMainPeakRanges(flatb, 10., 10.0, 200, 200) # Recommend threshholf of about 600
+peakRanges = LocateMainPeakRanges(flatb, 10., 10.0, 25, 25) 
 #print("peakRanges: " + str(peakRanges))
 #print(IsolatePeaks(peakRanges))
 
