@@ -9,6 +9,8 @@ from cmath import cos, sin, phase
 from math import radians, degrees
 from FindStars import LocateMainPeakRanges
 from compareDataUsno import GetCCDxyFromUSNOFits
+from dask.array.linalg import inv
+from bitarray._bitarray import tolist
 
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
@@ -19,11 +21,19 @@ xRotated, yRotated, XCyl, YCyl = GetCCDxyFromUSNOFits(filename)
 fp = 190020
 
 i=0
-matrixB = []
+matrixB = [[]]
+d = [[]]
 while i < len(XCyl):
     matrixB.append([fp*XCyl[i], fp*YCyl[i], 1])
     i+=1
-    
-print(matrixB)
- 
-c =   
+
+print("Under Pressure")
+matrixB = np.matrix(matrixB)   
+print(type(matrixB))
+matrixBT = np.transpose(matrixB)
+print(type(matrixBT))
+dpmatrixBTmatrixB = np.matrix.dot(tolist(matrixBT), tolist(matrixB))
+print(type(dpmatrixBTmatrixB))
+d = inv(dpmatrixBTmatrixB)
+cX = np.dot(d, np.dot(np.transpose(matrixB),xRotated))
+print(cX)
