@@ -35,11 +35,12 @@ def LocateMainPeakRanges(flatb, intensityGap, intensityThreshhold, colThreshold,
         #print("starRows: " + str(starRows))
         #print("starCols: " + str(starCols))
         #plt.subplot(211)
+        '''
         plt.plot(starCols, starRows, "r.")
         plt.xlim([0.0, 1024.0])
         plt.ylim([0.0, 1024.0])
-        plt.title("intensityGap: " + str(intensityGap) + "| intensityT " + str(intensityThreshhold) + "| colT: " + str(colThreshold) + "| rowT: " + str(rowThreshold))
-        
+        #plt.title("intensityGap: " + str(intensityGap) + "| intensityT " + str(intensityThreshhold) + "| colT: " + str(colThreshold) + "| rowT: " + str(rowThreshold))
+        '''
         return starRows, starCols
         
 def LocatePeakRanges(intensitiesDict, gap, threshhold):

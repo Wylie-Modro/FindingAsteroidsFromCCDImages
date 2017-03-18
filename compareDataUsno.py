@@ -87,7 +87,7 @@ def GetCCDxyFromUSNOFits(filename):
            
     return xRotated, yRotated, X1, Y1
 
-'''
+
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
 filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
@@ -130,6 +130,7 @@ for i in range(len(starRows)):
 print("rotatedXY: " + str(rotatedXY))
 print("starXY: " + str(starXY))
 
+
 starNMinDistance = []
 tempCombinedDiff = []
 for star in starXY:
@@ -141,13 +142,14 @@ for star in starXY:
 
 print("starXNMinDistance: " + str(starNMinDistance))
 
-
+'''
 #plt.subplot(212)
-plt.plot(xRotated, yRotated, 'b.')
+#plt.plot(xRotated, yRotated, 'b.')
 plt.xlabel('x [Pixel]')
 plt.ylabel('y [Pixel]')
-plt.xlim((0,1000))
-plt.ylim((0,1000))
+plt.title("Centroid Generated Image")
+plt.xlim((0,1024))
+plt.ylim((0,1024))
 plt.show()
 
 
@@ -163,5 +165,8 @@ Y_Differences, = plt.plot(yPlottingOnXAxis, yPlottingOnYAxis, "r^", label = 'y')
 plt.legend(handles=[X_Differences, Y_Differences])
 plt.xlim((0,1000))
 plt.ylim((0,200))
+plt.title("Pixel Offset Distance")
+plt.xlabel("x or y [pixel]")
+plt.ylabel("Pixel Offset Distance [pixel]")
 plt.show()
 '''
