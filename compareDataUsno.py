@@ -47,6 +47,8 @@ def GetCCDxyFromUSNOFits(filename):
     der = []
     X = []
     Y = []
+    X1 = []
+    Y1 = []
     x=[]
     y=[]
     xRotated=[]
@@ -60,7 +62,6 @@ def GetCCDxyFromUSNOFits(filename):
         X.append(-((cos(der[j])*sin(rar[j]-rar0))/(cos(der0)*cos(der[j])*cos(rar[j]-rar0)+sin(der[j])*sin(der0))))
         Y.append(-((sin(der0)*cos(der[j])*cos(rar[j]-rar0)-cos(der0)*sin(der[j]))/(cos(der0)*cos(der[j])*cos(rar[j]-rar0)+sin(der[j])*sin(der0))))
         j+=1
-    
     
     k = 0
     while (k < len(X)):
@@ -77,9 +78,16 @@ def GetCCDxyFromUSNOFits(filename):
         xRotated.append((x[m]*(cos(thetaRadians)) - y[m]*(sin(thetaRadians))).real)
         yRotated.append(((x[m]*(sin(thetaRadians)) + y[m]*(cos(thetaRadians)))).real)
         m+=1
-    return xRotated, yRotated, X, Y
+        
+    n=0    
+    while (n < len(X)):
+        X1.append(X[n].real)
+        Y1.append(Y[n].real)
+        n+=1
+           
+    return xRotated, yRotated, X1, Y1
 
-
+'''
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
 filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
@@ -119,20 +127,6 @@ starXY = []
 for i in range(len(starRows)):
     starXY.append([starRows[i], starCols[i]])  
 
-'''
-sortedXRotated = sorted(xRotated)
-sortedYRotated = sorted(yRotated)
-sortedStarRows = sorted(starRows)
-sortedStarCols = sorted(starCols)
-
-print("sortedXRotated: " + str(sortedXRotated))
-print("sortedYRotated: " + str(sortedYRotated))
-print("len(sortedXRotated): " + str(len(sortedXRotated)))
-print("sortedStarRows: " + str(sortedStarRows))
-print("sortedStarCols: " + str(sortedStarCols))
-print("len(sortedStarCols): " + str(len(sortedStarCols)))
-'''
-
 print("rotatedXY: " + str(rotatedXY))
 print("starXY: " + str(starXY))
 
@@ -170,3 +164,4 @@ plt.legend(handles=[X_Differences, Y_Differences])
 plt.xlim((0,1000))
 plt.ylim((0,200))
 plt.show()
+'''

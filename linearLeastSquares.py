@@ -16,4 +16,14 @@ filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
 
 xRotated, yRotated, XCyl, YCyl = GetCCDxyFromUSNOFits(filename)
 
+fp = 190020
 
+i=0
+matrixB = []
+while i < len(XCyl):
+    matrixB.append([fp*XCyl[i], fp*YCyl[i], 1])
+    i+=1
+    
+print(matrixB)
+ 
+c =   
