@@ -132,9 +132,11 @@ for star in starXY:
     tempCombinedDiff[:] = [] #clears list
     for usnoStar in rotatedXY:
         tempCombinedDiff.append(math.sqrt(((star[1] - usnoStar[1])**2)+((star[0] - usnoStar[0])**2)))
-    starNMinDistance.append([star, min(tempCombinedDiff)])
+    starNMinDistance.append([star[0], star[1], min(tempCombinedDiff)])
+    #starYNMinDistance.append([star[1], min(tempCombinedDiff)])
 
-print("starNMinDistance: " + str(starNMinDistance))
+print("starXNMinDistance: " + str(starNMinDistance))
+
 
 #plt.subplot(212)
 plt.plot(xRotated, yRotated, 'b.')
@@ -144,3 +146,17 @@ plt.xlim((0,1000))
 plt.ylim((0,1000))
 plt.show()
 
+
+XPlottingOnXAxis = [i[0] for i in starNMinDistance]
+XplottingOnYAxis = [i[2] for i in starNMinDistance]
+
+yPlottingOnXAxis = [i[1] for i in starNMinDistance]
+yPlottingOnYAxis = [i[2] for i in starNMinDistance]
+
+X_Differences, = plt.plot(XPlottingOnXAxis, XplottingOnYAxis, "g^", label = 'x')
+Y_Differences, = plt.plot(yPlottingOnXAxis, yPlottingOnYAxis, "r^", label = 'y')
+#plt.legend(bbox_to_anchor=(1.05, 1), loc = 2, borderaxespad=0.)
+plt.legend(handles=[X_Differences, Y_Differences])
+plt.xlim((0,1000))
+plt.ylim((0,200))
+plt.show()
