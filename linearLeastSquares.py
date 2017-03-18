@@ -8,7 +8,12 @@ from usno import usno
 from cmath import cos, sin, phase
 from math import radians, degrees
 from FindStars import LocateMainPeakRanges
+from compareDataUsno import GetCCDxyFromUSNOFits
 
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
 filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
+
+xRotated, yRotated, XCyl, YCyl = GetCCDxyFromUSNOFits(filename)
+
+
