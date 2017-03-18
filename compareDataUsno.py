@@ -7,152 +7,7 @@ import math as math
 from usno import usno 
 from cmath import cos, sin, phase
 from math import radians, degrees
-
-def LocateMainPeakRanges(flatb, intensityGap, intensityThreshhold, colThreshold, rowThreshold):
-        intensitiesDict = {}
-        rowNum = 0
-        num = 0
-        for entry in flatb:
-            colNum = 0
-            rowNum +=1
-            for subEntry in entry:
-                colNum += 1
-                num += 1
-                intensitiesDict[num] = [rowNum, colNum, subEntry]
-        
-        draftLocationOfStarRanges = LocatePeakRanges(intensitiesDict, intensityGap, intensityThreshhold)
-        print("draftLocationOfStarRanges: " + str(draftLocationOfStarRanges))
-        print("len(draftLocationOfStarRanges): " + str(len(draftLocationOfStarRanges)))
-        groupedLocationOfStarRanges = IsolateStarPointsIntoGroups(draftLocationOfStarRanges, intensitiesDict, colThreshold, rowThreshold)
-        print("groupedLocationOfStasrRanges: " + str(groupedLocationOfStarRanges))
-        print("len(groupedLocationOfStarRanges): " + str(len(groupedLocationOfStarRanges)))
-        averagedStarLocations = GetAveStarLocFromAverage(groupedLocationOfStarRanges, intensitiesDict)
-        print("averagedStarLocations: " + str(averagedStarLocations))
-        print("len(averagedStarLocations): " + str(len(averagedStarLocations)))
-        
-        starRows = []
-        starCols = []
-        for star in averagedStarLocations:
-            #print(star)
-            starRows.append(star[0])
-            starCols.append(star[1])
-        print("starRows: " + str(starRows))
-        print("starCols: " + str(starCols))
-        plt.plot(starCols, starRows, "r.")
-        plt.xlim([0.0, 1024.0])
-        plt.ylim([0.0, 1024.0])
-        plt.title("intensityGap: " + str(intensityGap) + "| intensityT " + str(intensityThreshhold) + "| colT: " + str(colThreshold) + "| rowT: " + str(rowThreshold))
-        
-def LocatePeakRanges(intensitiesDict, gap, threshhold):
-    locationRowOfPeakRanges = []
-    for key, value in intensitiesDict.iteritems():
-            row = value[0]
-            
-            if row+gap >= 1024:
-                gap = float(int(gap/2))
-            startValue = (intensitiesDict[key])[2]
-            midValue = (intensitiesDict[key+int(gap/2)])[2]
-            endValue = (intensitiesDict[key+gap])[2]
-            if midValue - startValue > threshhold and midValue - endValue > threshhold :
-                locationRowOfPeakRanges.append(int(key + gap/2))
-            else:
-                pass
-    return locationRowOfPeakRanges
-        
-
-def IsolateStarPointsIntoGroups(locationRowOfPeakRanges, intensitiesDict, colThreshold, rowThreshold):
-        peakSet = set()
-        masterList = []
-        tempList = []
-        
-        for peakNumOuterLoop in locationRowOfPeakRanges:
-            rowO = (intensitiesDict[peakNumOuterLoop])[0]
-            colO = (intensitiesDict[peakNumOuterLoop])[1]
-            #print("peakNumOuterLoop: " + str(peakNumOuterLoop))
-            
-            if (colO <= 275 and colO >= 245):
-                locationRowOfPeakRanges.remove(peakNumOuterLoop)
-                #print("Deleted peakNumOuterLoop as was in line")
-            else:  
-            
-                for peakNumInnerLoop in locationRowOfPeakRanges:
-                    rowI = (intensitiesDict[peakNumInnerLoop])[0]
-                    colI = (intensitiesDict[peakNumInnerLoop])[1]
-                    #print("peakNumInnerLoop: " + str(peakNumInnerLoop))
-                    
-                    #print("rowO: " + str(rowO))
-                    #print("rowI: " + str(rowI))
-                    #print("colO: " + str(colO))
-                    #print("colI: " + str(colI))
-                    
-                    if (colI <= 275 and colI >= 245):
-                            locationRowOfPeakRanges.remove(peakNumInnerLoop)
-                            #print("Deleted peakNumInnerLoop as was in line")
-                    elif np.abs(rowO - rowI) <= rowThreshold and np.abs(colO - colI) <= colThreshold:
-                        #print("Through Threshhold")
-                        if (rowO == rowI and colO == colI):
-                            pass
-                        else:
-                            #print("Added peakNumOuterLoop: " + str(peakNumOuterLoop))
-                            peakSet.add(peakNumInnerLoop)
-                            
-                            locationRowOfPeakRanges.remove(peakNumInnerLoop)
-                            #print("add: len(locationRowOfPeakRanges):" + str(len(locationRowOfPeakRanges)))
-                            
-                            #print("Added locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]: " + str(locationRowOfPeakRanges[locationRowOfPeakRanges.index(peakNumOuterLoop)+1]))
-                            #print("peakSet after add: " + str(peakSet))
-                    else: 
-                        #print("Rejected")
-                        pass
-                    
-                    # when itterated peakNumOuterLoop for all values of peakNumInnerLoop
-                peakSet.add(peakNumOuterLoop)
-                locationRowOfPeakRanges.remove(peakNumOuterLoop)
-                #print("end loop: len(locationRowOfPeakRanges):" + str(len(locationRowOfPeakRanges)))
-                
-                if len(peakSet) > 0:
-                    for peak in peakSet:
-                        #print("peakSet: " + str(peakSet))
-                        tempList.append(peak)
-                    copyOftempList = list(tempList)
-                    #print("tempList: "  + str(tempList))
-                    masterList.append(copyOftempList)
-                    #print("masterList: " + str(masterList))
-                    del tempList[:]
-                    peakSet.clear()
-                
-                #lastRow = (intensitiesDict[locationRowOfPeakRanges[-1]])[0]
-                #lastCol = (intensitiesDict[locationRowOfPeakRanges[-1]])[1]
-                #print("lastRow: " + str(lastRow))
-                #print("lastCol: " + str(lastCol))
-                '''
-                if nextRow == lastRow and nextCol == lastCol:
-                    for peak in peakSet:
-                        tempList.append(peak)
-                    masterList.append(tempList)
-                '''
-                
-        print("About to exit")
-        return masterList    
-               # print("----------------------------------")
-            
-
-
-def GetAveStarLocFromAverage(masterList, intensitiesDict):
-    listOfAveragedStarPositions = []
-    for group in masterList:
-        #print("group: " + str(group))
-        sumCol = 0
-        sumRow = 0
-        for value in group:
-            #print("value: " + str(value))
-            sumRow += (intensitiesDict[value])[0]
-            sumCol += (intensitiesDict[value])[1]
-        if len(group) > 0:
-            groupRowAverage = sumRow / len(group)
-            groupColAverage = sumCol / len(group)
-            listOfAveragedStarPositions.append([groupRowAverage, groupColAverage])
-    return listOfAveragedStarPositions
+from FindStars import LocateMainPeakRanges
 
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
@@ -169,12 +24,10 @@ flatb = bsub(flat,hdr.get('cover')) # Bias subtract
 flatb = flatb/np.median(flatb) # normalize
 
 
-peakRanges = LocateMainPeakRanges(flatb, 10., 5.0, 25, 25) 
-#print("peakRanges: " + str(peakRanges))
-#print(IsolatePeaks(peakRanges))
+starRows, starCols = LocateMainPeakRanges(flatb, 10., 10.0, 25, 25) 
 
-#print("peakRanges: " + str(peakRanges))
-#print(IsolatePeaks(peakRanges))
+print("starRows : " + str(starRows))
+print("starCols : " + str(starCols))
 
 fits1 = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
 s1 = pf.open(fits1)
@@ -192,9 +45,10 @@ name,rad,ded,rmag = usno(radeg,dedeg,fovam,epoch)
 print(rad)
 
 plt.figure(1)
-w = np.where(rmag < 28)[0]
+w = np.where(rmag <28)[0]
+
+
 '''
-plt.subplot(211)
 plt.plot(rad[w],ded[w],'g.')
 plt.locator_params(axis='x',nbins=4)
 plt.locator_params(axis='y',nbins=4)
@@ -214,9 +68,7 @@ der = []
 X = []
 Y = []
 x=[]
-x1=[]
 y=[]
-y1=[]
 xRotated=[]
 yRotated=[]
 for i in w:
@@ -232,28 +84,58 @@ while (j < len(rar)):
 
 k = 0
 while (k < len(X)):
-    x.append(abs(20*(X[k]/0.000015)+280))
-    y.append(abs(20*(Y[k]/0.000015)+670))        
+    x.append(16.84*(X[k]/0.000030)+514) # x.append(16.84*(X[k]/0.000030)+514)
+    y.append(16.84*(Y[k]/0.000030)+438) # y.append(16.84*(Y[k]/0.000030)+438)    
     k+=1
-  
-l=0
-while (l < len(x)):
-    x1.append(x[l].real)
-    y1.append(y[l].real)
-    l+=1
 
 m=0
-thetaDegrees=31
+thetaDegrees= 15 #5
 thetaRadians=radians(thetaDegrees)
-print(type(x1))
-print(type(cos(thetaRadians)).real)
-while (m < len(x1)):
-    xRotated.append((x1[m]*(cos(thetaRadians)).real - y1[m]*(sin(thetaRadians)).real))
-    yRotated.append((x1[m]*(sin(thetaRadians)).real + y1[m]*(sin(thetaRadians)).real))
+print(cos(thetaRadians).real)
+
+while (m < len(x)):
+    xRotated.append((x[m]*(cos(thetaRadians)) - y[m]*(sin(thetaRadians))).real)
+    yRotated.append(((x[m]*(sin(thetaRadians)) + y[m]*(cos(thetaRadians)))).real)
     m+=1
-    
+
 print(xRotated)
 print(yRotated)
+
+rotatedXY = []
+for i in range(len(xRotated)):
+    rotatedXY.append([xRotated[i], yRotated[i]])
+  
+starXY = []
+for i in range(len(starRows)):
+    starXY.append([starRows[i], starCols[i]])  
+
+'''
+sortedXRotated = sorted(xRotated)
+sortedYRotated = sorted(yRotated)
+sortedStarRows = sorted(starRows)
+sortedStarCols = sorted(starCols)
+
+print("sortedXRotated: " + str(sortedXRotated))
+print("sortedYRotated: " + str(sortedYRotated))
+print("len(sortedXRotated): " + str(len(sortedXRotated)))
+print("sortedStarRows: " + str(sortedStarRows))
+print("sortedStarCols: " + str(sortedStarCols))
+print("len(sortedStarCols): " + str(len(sortedStarCols)))
+'''
+
+print("rotatedXY: " + str(rotatedXY))
+print("starXY: " + str(starXY))
+
+starNMinDistance = []
+tempCombinedDiff = []
+for star in starXY:
+    tempCombinedDiff[:] = [] #clears list
+    for usnoStar in rotatedXY:
+        tempCombinedDiff.append(math.sqrt(((star[1] - usnoStar[1])**2)+((star[0] - usnoStar[0])**2)))
+    starNMinDistance.append([star, min(tempCombinedDiff)])
+
+print("starNMinDistance: " + str(starNMinDistance))
+
 #plt.subplot(212)
 plt.plot(xRotated, yRotated, 'b.')
 plt.xlabel('x [Pixel]')

@@ -32,12 +32,15 @@ def LocateMainPeakRanges(flatb, intensityGap, intensityThreshhold, colThreshold,
             #print(star)
             starRows.append(star[0])
             starCols.append(star[1])
-        print("starRows: " + str(starRows))
-        print("starCols: " + str(starCols))
+        #print("starRows: " + str(starRows))
+        #print("starCols: " + str(starCols))
+        #plt.subplot(211)
         plt.plot(starCols, starRows, "r.")
         plt.xlim([0.0, 1024.0])
         plt.ylim([0.0, 1024.0])
         plt.title("intensityGap: " + str(intensityGap) + "| intensityT " + str(intensityThreshhold) + "| colT: " + str(colThreshold) + "| rowT: " + str(rowThreshold))
+        
+        return starRows, starCols
         
 def LocatePeakRanges(intensitiesDict, gap, threshhold):
     locationRowOfPeakRanges = []
@@ -150,7 +153,8 @@ def GetAveStarLocFromAverage(masterList, intensitiesDict):
             listOfAveragedStarPositions.append([groupRowAverage, groupColAverage])
     return listOfAveragedStarPositions
 
-print('Asteroids do not concern me, Admiral. - Darth Vader')
+'''
+print('Asteroids do not concern me, Admiral. - Lord Vader')
 
 filename = 'data-2017-03-02-nickel-Shelley.Wright/d1060.fits'
 
@@ -169,4 +173,4 @@ peakRanges = LocateMainPeakRanges(flatb, 10., 5.0, 25, 25)
 #print("peakRanges: " + str(peakRanges))
 #print(IsolatePeaks(peakRanges))
 
-
+'''
