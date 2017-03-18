@@ -23,7 +23,7 @@ name,rad,ded,rmag = usno(radeg,dedeg,fovam,epoch)
 print(rad)
 
 plt.figure(1)
-w = np.where(rmag < 17)[0]
+w = np.where(rmag < 28)[0]
 plt.subplot(211)
 plt.plot(rad[w],ded[w],'g.')
 plt.locator_params(axis='x',nbins=4)
@@ -60,8 +60,8 @@ while (j < len(rar)):
 
 k = 0
 while (k < len(X)):
-    x.append(3.454*(X[k]/0.000009))
-    y.append(3.454*(Y[k]/0.000009))        
+    x.append(abs(30.84*(X[k]/0.000015)))
+    y.append(abs(30.84*(Y[k]/0.000015)))        
     k+=1
   
 l=0
@@ -75,6 +75,8 @@ print(y1)
 
 plt.subplot(212)
 plt.plot(x1, y1, 'r.')
-plt.xlabel('x [Deg]')
-plt.ylabel('y [Deg]')
+plt.xlabel('x [Pixel]')
+plt.ylabel('y [Pixel]')
+plt.xlim((0,1000))
+plt.ylim((0,1000))
 plt.show()
