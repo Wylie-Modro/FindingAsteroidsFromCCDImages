@@ -9,8 +9,7 @@ from cmath import cos, sin, phase
 from math import radians, degrees
 from FindStars import LocateMainPeakRanges
 from compareDataUsno import GetCCDxyFromUSNOFits
-from dask.array.linalg import inv
-from bitarray._bitarray import tolist
+from numpy.linalg import inv
 
 print('Asteroids do not concern me, Admiral. - Darth Vader')
 
@@ -21,19 +20,31 @@ xRotated, yRotated, XCyl, YCyl = GetCCDxyFromUSNOFits(filename)
 fp = 190020
 
 i=0
-matrixB = [[]]
-d = [[]]
+matrixB = []
 while i < len(XCyl):
     matrixB.append([fp*XCyl[i], fp*YCyl[i], 1])
     i+=1
 
 print("Under Pressure")
-matrixB = np.matrix(matrixB)   
-print(type(matrixB))
+matrixA = [[1,2,3],[4,5,6],[7,8,9]]
+matrixA = np.matrix(matrixA)
+matrixAT = np.transpose(matrixA)
+da = np.dot(matrixAT, matrixA)
+
+xRotatedMatrix = np.transpose(np.matrix(xRotated))
+yRotatedMatrix = np.transpose(np.matrix(yRotated))
+
+matrixB = np.matrix(matrixB)
+
 matrixBT = np.transpose(matrixB)
-print(type(matrixBT))
-dpmatrixBTmatrixB = np.matrix.dot(tolist(matrixBT), tolist(matrixB))
-print(type(dpmatrixBTmatrixB))
+dpmatrixBTmatrixB = np.matrix(np.matrix.dot(np.matrix(matrixBT), np.matrix(matrixB)))
 d = inv(dpmatrixBTmatrixB)
-cX = np.dot(d, np.dot(np.transpose(matrixB),xRotated))
+matrixBTdotxRotated = np.dot(np.transpose(matrixB),xRotatedMatrix)
+matrixBTdotyRotated = np.dot(np.transpose(matrixB),yRotatedMatrix)
+cX = np.dot(d, matrixBTdotxRotated)
 print(cX)
+cY = np.dot(d, matrixBTdotyRotated)
+print(cY)
+
+
+
